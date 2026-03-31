@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+    <session-factory>
+        <!-- PostgreSQL Connection -->
+        <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+        <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/learning_platform</property>
+        <property name="hibernate.connection.username">learning_user</property>
+        <property name="hibernate.connection.password">hibernate123</property>
+
+        <!-- Dialect -->
+        <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+
+        <!-- Schema generation -->
+        <property name="hibernate.hbm2ddl.auto">update</property>
+
+        <!-- Logging -->
+        <property name="hibernate.show_sql">true</property>
+        <property name="hibernate.format_sql">true</property>
+        <property name="hibernate.use_sql_comments">true</property>
+
+        <!-- Scan entities - HIER FEHLT Enrollment! -->
+        <mapping class="de.learning.platform.model.Person"/>
+        <mapping class="de.learning.platform.model.Student"/>
+        <mapping class="de.learning.platform.model.Professor"/>
+        <mapping class="de.learning.platform.model.Course"/>
+        <mapping class="de.learning.platform.model.Enrollment"/>  <!-- ← HINZUFÜGEN! -->
+    </session-factory>
+</hibernate-configuration>
