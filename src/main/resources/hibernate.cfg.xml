@@ -27,6 +27,11 @@
         <mapping class="de.learning.platform.model.Student"/>
         <mapping class="de.learning.platform.model.Professor"/>
         <mapping class="de.learning.platform.model.Course"/>
-        <mapping class="de.learning.platform.model.Enrollment"/>  <!-- ← HINZUFÜGEN! -->
+        <mapping class="de.learning.platform.model.Enrollment"/>
+        <mapping class="de.learning.platform.model.Module"/>
+        <mapping class="de.learning.platform.model.Assignment"/>
+        <mapping class="de.learning.platform.model.Submission"/>
+        <mapping class="de.learning.platform.model.Certificate"/>
+        <mapping class="de.learning.platform.model.Category"/>
     </session-factory>
 </hibernate-configuration>

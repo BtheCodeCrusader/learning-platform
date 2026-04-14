@@ -55,12 +55,19 @@ Password: hibernate123
 
 ## 🔄 **Täglicher Workflow**
 ```bash
-git checkout main && git pull origin main
-git checkout -b feature/deine-aufgabe
-# Code ändern
-mvn clean compile exec:java
-git add . && git commit -m "feat: Änderung"
-git push origin feature/deine-aufgabe
+git checkout main                       # Wechsel auf den main-Branch (Hauptbranch)
+git pull origin main                    # Hole die neuesten Änderungen vom Remote-Repository
+
+git checkout -b feature/deine-aufgabe   # Erstelle einen neuen Branch für deine Aufgabe
+
+# Code ändern                           # Hier entwickelst du deine Funktionalität
+
+mvn clean compile exec:java             # Projekt bauen und ausführen (Testen, ob alles funktioniert)
+
+git add .                               # Alle Änderungen zum Commit vormerken
+git commit -m "feat: Änderung"          # Änderungen lokal speichern (Commit erstellen)
+
+git push origin feature/deine-aufgabe   # Branch auf GitHub hochladen
 ```
 
 ## ⚙️ **Konfiguration**
