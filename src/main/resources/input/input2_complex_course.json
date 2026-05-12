@@ -1,0 +1,19 @@
+{
+  "title": "Cloud Computing",
+  "description": "AWS, Azure, GCP",
+  "professor": {
+    "name": "Prof. Cloud",
+    "email": "cloud@uni.de",
+    "title": "Prof. Dr."
+  },
+  "modules": [
+    {
+      "title": "AWS Basics",
+      "description": "EC2, S3, Lambda"
+    },
+    {
+      "title": "Azure Fundamentals",
+      "description": "VMs, Storage, Functions"
+    }
+  ]
+}

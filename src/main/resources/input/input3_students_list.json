@@ -1,0 +1,17 @@
+[
+  {
+    "name": "Student A",
+    "email": "a@student.de",
+    "studentId": "S10001"
+  },
+  {
+    "name": "Student B",
+    "email": "b@student.de",
+    "studentId": "S10002"
+  },
+  {
+    "name": "Student C",
+    "email": "c@student.de",
+    "studentId": "S10003"
+  }
+]

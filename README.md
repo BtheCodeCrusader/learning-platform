@@ -83,3 +83,27 @@ hibernate.connection.password=hibernate123
 
 ## 🚀 **Fertig!**
 **Clone → Setup → Code → Commit → Push** 
+
+## 📁 File-based Data Storage (Exercise 2)
+
+Die Anwendung wurde um file-basierten Datenaustausch mit JSON erweitert. Neue Daten können als
+Einzelobjekt, als komplex verschachtelte Struktur oder als Liste mehrerer Datensätze importiert
+und über Hibernate in PostgreSQL gespeichert werden. Zusätzlich können einzelne Entitäten sowie
+aggregierte Query-Ergebnisse wieder als JSON-Dateien für den Datentransfer exportiert werden.
+
+### Input Szenarien:
+1. **Single Student** → `input1_single_student.json`
+2. **Complex Course** (mit Professor + Module) → `input2_complex_course.json`
+3. **Studenten-Liste** → `input3_students_list.json`
+
+### Output Szenarien:
+1. **Single Student** → `output1_student_single.json`
+2. **Single Professor** → `output2_professor_single.json`
+3. **Query: Students/Kurs** → `output3_students_per_course.json`
+4. **Query: Durchschnittsnoten** → `output4_avg_grades.json`
+5. **Query: Zertifikate** → `output5_certificates.json`
+
+### Ausführen:
+```bash
+mvn clean compile exec:java -Dexec.mainClass="de.learning.platform.model.Main"
+``` 
