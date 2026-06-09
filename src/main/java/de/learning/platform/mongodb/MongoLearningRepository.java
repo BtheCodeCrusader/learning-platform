@@ -213,7 +213,7 @@ public class MongoLearningRepository implements AutoCloseable {
             Document courseSnapshot = new Document("courseId", course.getId())
                     .append("courseTitle", course.getTitle())
                     .append("professorName", professor != null ? professor.getName() : null)
-                    .append("enrollmentDate", toDate(enrollment.getEnrollmentDate()))
+                    .append("enrollmentDate", enrollment.getEnrollmentDate())
                     .append("submissionCount", courseSubmissions.size())
                     .append("averageGrade", averageGrade)
                     .append("lastSubmissionDate", lastSubmissionDate)
