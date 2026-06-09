@@ -1,5 +1,8 @@
 package de.learning.platform.model;
 
+import de.learning.platform.mongodb.MongoLearningRepository;
+import de.learning.platform.mongodb.PolyglotAnalyticsService;
+import org.bson.Document;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -14,25 +17,30 @@ public class Main {
 
         try (SessionFactory factory = buildSessionFactory()) {
 
-            // =====================
-            // TESTDATEN + QUERIES
-            // =====================
-            executeInTransaction(factory, session -> {
-                createTestData(session);
-                runQueries(session);
-            });
-            System.out.println("\n✅ Testdaten und Queries erfolgreich ausgeführt!");
+            executeInTransaction(factory, Main::createTestData);
+            System.out.println("✅ Testdaten gespeichert!");
 
-            // =====================
-            // DATEIVERARBEITUNG
-            // =====================
-            System.out.println("\nDateiverarbeitung gestartet...");
-
-            // =====================
-            // INPUT FILES
-            // =====================
             executeInTransaction(factory, FileProcessor::processInputFiles);
             System.out.println("✅ Input-Dateien verarbeitet!");
+
+            executeInTransaction(factory, Main::runQueries);
+            System.out.println("✅ SQL-Queries ausgeführt!");
+
+            try (MongoLearningRepository mongo = MongoLearningRepository.createDefault()) {
+                PolyglotAnalyticsService polyglot = new PolyglotAnalyticsService(mongo);
+
+                executeInTransaction(factory, session -> {
+                    mongo.seedFromSql(session);
+                    runMongoQueries(mongo);
+                    polyglot.printCourseEngagementReport(session, "Java Programmierung");
+                    polyglot.printAtRiskSupportReport(session, "Java Programmierung", 7);
+                });
+
+                System.out.println("✅ MongoDB-Daten gespeichert und Abfragen ausgeführt!");
+            } catch (Exception mongoException) {
+                System.out.println("⚠️ MongoDB nicht verfügbar oder nicht erreichbar:");
+                System.out.println(mongoException.getMessage());
+            }
 
             // =====================
             // OUTPUT FILES
@@ -463,5 +471,32 @@ public class Main {
                 .forEach(r ->
                         System.out.println(
                                 r[0] + ": " + r[1]));
+    }
+
+    private static void runMongoQueries(MongoLearningRepository mongo) {
+        System.out.println("\nMongoDB: High performers in Java Programmierung");
+        mongo.findHighPerformingStudents("Java Programmierung", 85.0)
+                .forEach(doc -> printMongoCourseLine("High performer", doc));
+
+        System.out.println("\nMongoDB: Inaktive Studenten in Java Programmierung");
+        mongo.findInactiveStudents("Java Programmierung", 7)
+                .forEach(doc -> printMongoCourseLine("Inactive", doc));
+
+        System.out.println("\nMongoDB: Zertifikatsinhaber in Java Programmierung");
+        mongo.findCertificateHolders("Java Programmierung")
+                .forEach(doc -> printMongoCourseLine("Certificate", doc));
+    }
+
+    private static void printMongoCourseLine(String label, Document doc) {
+        Document course = doc.get("course", Document.class);
+        System.out.println(
+                label + " - "
+                        + doc.getString("studentName")
+                        + " (" + doc.getString("studentCode") + ")"
+                        + " | " + course.getString("courseTitle")
+                        + " | avg "
+                        + String.format("%.1f", course.getDouble("averageGrade"))
+                        + " | last activity "
+                        + course.getDate("lastSubmissionDate"));
     }
 }

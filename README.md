@@ -107,3 +107,71 @@ aggregierte Query-Ergebnisse wieder als JSON-Dateien für den Datentransfer expo
 ```bash
 mvn clean compile exec:java -Dexec.mainClass="de.learning.platform.model.Main"
 ``` 
+
+## 🧩 Polyglot Persistence (MongoDB)
+
+Für die Erweiterung wurde neben PostgreSQL eine MongoDB eingebunden. Die relationale Datenbank bleibt das System of Record für `Student`, `Course`, `Enrollment`, `Submission` und `Certificate`. MongoDB speichert ergänzend halbstrukturierte Lernprofile pro Student, also Daten mit stark variabler Form und verschachtelten Details.
+
+### Use Case
+Die neue Sammlung `student_learning_profiles` hält pro Student ein Dokument mit eingebetteten Kurs-Snapshots. Jeder Snapshot enthält unter anderem:
+- Kursreferenz und Dozent
+- Einschreibedatum
+- Anzahl Abgaben
+- Durchschnittsnote
+- letzte Aktivität
+- Zertifikats-Titel
+- letzte Abgaben als eingebettete Liste
+
+### Figur der Datenstruktur
+```text
+PostgreSQL
+  students ---- enrollments ---- courses ---- professors
+      |              |                |
+      |              |                +---- assignments ---- submissions
+      |              |
+      |              +---- certificates
+      |
+      +---- student_learning_profiles (MongoDB)
+               |
+               +-- _id: "student:S12345"
+               +-- studentDbId
+               +-- studentCode
+               +-- studentName
+               +-- email
+               +-- courses[]
+                     +-- courseId
+                     +-- courseTitle
+                     +-- professorName
+                     +-- enrollmentDate
+                     +-- submissionCount
+                     +-- averageGrade
+                     +-- lastSubmissionDate
+                     +-- certificateTitles[]
+                     +-- recentSubmissions[]
+```
+
+### MongoDB-Queries
+1. `findHighPerformingStudents(courseTitle, minimumAverageGrade)`  
+   Return: alle Studenten mit einem Kurs-Snapshot, dessen Durchschnittsnote über dem Schwellwert liegt.
+2. `findInactiveStudents(courseTitle, inactivityDays)`  
+   Return: Studenten, deren letzter Kursbeitrag älter als die angegebene Anzahl Tage ist.
+3. `findCertificateHolders(courseTitle)`  
+   Return: Studenten mit mindestens einem Zertifikat in dem Kurs.
+
+### Polyglot Query Cases
+1. `printCourseEngagementReport(...)`  
+   SQL liefert Kurs, Dozent und eingeschriebene Studenten. MongoDB ergänzt die High-Performer-Snapshots.  
+   Return: kombinierter Kursbericht mit relationalen Stammdaten und NoSQL-Engagementdaten.
+2. `printAtRiskSupportReport(...)`  
+   MongoDB liefert inaktive Studenten im Kurs. SQL ergänzt Durchschnittsnoten und Zertifikatsanzahl.  
+   Return: Support-Liste für gefährdete Studenten mit beiden Datenquellen.
+
+### MongoDB Setup
+Standardmäßig wird auf `mongodb://localhost:27017` verbunden. Die Werte können bei Bedarf über System-Properties überschrieben werden:
+```bash
+mvn clean compile exec:java \
+  -Dexec.mainClass="de.learning.platform.model.Main" \
+  -Dmongo.uri="mongodb://localhost:27017" \
+  -Dmongo.db="learning_platform" \
+  -Dmongo.collection="student_learning_profiles"
+```
